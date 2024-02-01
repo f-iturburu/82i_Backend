@@ -12,10 +12,10 @@ import {
 } from "../controllers/product.Controllers.js";
 
 router.get("/products", getAll);
-router.get("/product/:id", getById);
-router.get("/product/:order", sortByPrice);
-router.get("/product/:category", sortByCategory);
-router.get("/product/:name", searchByName);
+router.get("/product/id/:id", getById);
+router.get("/product/order/:order", sortByPrice);
+router.get("/product/category/:category", sortByCategory);
+router.get("/product/name/:searchQuery", searchByName);
 router.post("/product", create);
 router.patch("/product/:id", edit);
 router.delete("product/:id", findByIdAndDelete);

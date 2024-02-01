@@ -1,3 +1,5 @@
+import crypto from "crypto"
+
 export class Product {
   constructor({ name, price, discountPercentage, category, image }) {
     this.name = name;

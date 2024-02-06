@@ -120,8 +120,26 @@
 							"variable": [
 								{
 									"key": "searchQuery",
-									"value": "gorr"
+									"value": "Bot"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "searchWithOptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/products/search",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"products",
+								"search"
 							]
 						}
 					},
@@ -134,7 +152,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Remera NodeJs\",\r\n    \"price\" : \"40.000\",\r\n    \"discountPercentage\" : 15,\r\n    \"category\": \"shirt\",\r\n    \"image\": \"https://http2.mlstatic.com/D_NQ_NP_813556-MLA54979685798_042023-O.webp\"\r\n\r\n}",
+							"raw": "{\r\n    \"name\": \"Remera NodeJs\",\r\n    \"price\" : \"40.000\",\r\n    \"discountPercentage\" : 15,\r\n    \"category\": \"shirt\",\r\n    \"image\": \"https://http2.mlstatic.com/D_NQ_NP_813556-MLA54979685798_042023-O.webp\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

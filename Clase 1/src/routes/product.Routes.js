@@ -18,8 +18,11 @@ router.get("/product/order/:order", sortByPrice);
 router.get("/product/category/:category", sortByCategory);
 router.get("/product/name/:searchQuery", searchByName);
 router.get("/products/search", searchWithOptions)
+
 router.post("/product", create);
+
 router.patch("/product/:id", edit);
+
 router.delete("product/:id", findByIdAndDelete);
 
 export default router;

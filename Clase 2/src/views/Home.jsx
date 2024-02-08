@@ -95,7 +95,67 @@ const searchWithOptions = async ({
   valueCategoryInput,
   valuePriceInput,
 }) => {
-  console.log(valueSearchInput);
+
+  const queryParams = {
+    name: valueSearchInput,
+    price:  valuePriceInput,
+    category: valueCategoryInput,
+  };
+
+  let queryString = "?";
+
+  for (const key in queryParams) {
+    if (queryParams[key]) {
+      queryString.length == 1
+        ? (queryString += `${key}=${queryParams[key]}`)
+        : (queryString += `&${key}=${queryParams[key]}`);
+    }
+  }
+
+  // let queryString = "?";
+
+  // if (valueCategoryInput) {
+  //   queryString.length == 1
+  //     ? (queryString += `category=${category}`)
+  //     : (queryString += `&category=${category}`);
+  // }
+
+  // if (valuePriceInput) {
+  //   queryString.length == 1
+  //     ? (queryString += `price=${price}`)
+  //     : (queryString += `&price=${price}`);
+  // }
+
+  // if (valueSearchInput) {
+  //   queryString.length == 1
+  //     ? (queryString += `name=${name}`)
+  //     : (queryString += `&name=${name}`);
+  // }
+
+  setLoading(true);
+  try {
+    const res = await fetch(`${BASE_URL}/products/search${queryString}`, {
+      headers: {
+        "content-type": "application/json",
+      },
+      method: "GET",
+    });
+
+    const data = await res.json();
+    console.log(res);
+    console.log(data);
+    if (res.status == 200) {
+      setState(data);
+    }
+
+    if (res.status == 404 || res.status == 500) {
+      setState(null);
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
 };
 
 const fetchAllProducts = async (setState, setLoading) => {
@@ -196,13 +256,13 @@ export const Home = () => {
                 ref={searchInputRef}
                 onKeyDown={(e) =>
                   e.code == "Enter"
-                    ?   searchWithOptions({
-                      setState: setData,
-                      setLoading: setLoading,
-                      valueSearchInput: searchInputRef.current.value,
-                      valueCategoryInput: priceInputRef.current.value,
-                      valuePriceInput: categoryInputRef.current.value,
-                    })
+                    ? searchWithOptions({
+                        setState: setData,
+                        setLoading: setLoading,
+                        valueSearchInput: searchInputRef.current.value,
+                        valueCategoryInput: categoryInputRef.current.value,
+                        valuePriceInput: priceInputRef.current.value,
+                      })
                     : ""
                 }
               />
@@ -212,19 +272,19 @@ export const Home = () => {
             <Form.Select
               className="form-select"
               id="priceSelect"
-              defaultValue={"default"}
+              defaultValue={""}
               ref={priceInputRef}
               onChange={(e) =>
                 searchWithOptions({
                   setState: setData,
                   setLoading: setLoading,
                   valueSearchInput: searchInputRef.current.value,
-                  valueCategoryInput: priceInputRef.current.value,
-                  valuePriceInput: categoryInputRef.current.value,
+                  valueCategoryInput: categoryInputRef.current.value,
+                  valuePriceInput: priceInputRef.current.value,
                 })
               }
             >
-              <option disabled hidden value="default">
+              <option disabled hidden value="">
                 Filtrar por precio
               </option>
               <option value="asc">Precio ascendente</option>
@@ -236,19 +296,19 @@ export const Home = () => {
             <Form.Select
               className="form-select"
               id="categorySelect"
-              defaultValue={"default"}
+              defaultValue={""}
               ref={categoryInputRef}
               onChange={(e) =>
                 searchWithOptions({
                   setState: setData,
                   setLoading: setLoading,
                   valueSearchInput: searchInputRef.current.value,
-                  valueCategoryInput: priceInputRef.current.value,
-                  valuePriceInput: categoryInputRef.current.value,
+                  valueCategoryInput: categoryInputRef.current.value,
+                  valuePriceInput: priceInputRef.current.value,
                 })
               }
             >
-              <option disabled hidden value="default">
+              <option disabled hidden value="">
                 Filtrar por categoria
               </option>
               <option value="mug">Tazas</option>
@@ -310,10 +370,10 @@ export const Home = () => {
             <Form.Select
               className="form-select mb-3"
               id="categorySelect"
-              defaultValue={"default"}
+              defaultValue={""}
               name="category"
             >
-              <option disabled hidden value="default">
+              <option disabled hidden value="">
                 Elegir categoria
               </option>
               <option value="mug">Tazas</option>

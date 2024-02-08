@@ -133,13 +133,27 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL}}/products/search",
+							"raw": "{{BASE_URL}}/products/search?id=1&price=25&category=hat",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"products",
 								"search"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								},
+								{
+									"key": "price",
+									"value": "25"
+								},
+								{
+									"key": "category",
+									"value": "hat"
+								}
 							]
 						}
 					},

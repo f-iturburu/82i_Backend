@@ -1,7 +1,6 @@
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
+dotenv.config();
 
-dotenv.config()
-
-export const PORT = process.env.PORT || 4000
-export const CONNECTION_STRING = process.env.CONNECTION_STRING
+export const PORT = process.env.PORT || 4000;
+export const CONNECTION_STRING = process.env.CONNECTION_STRING;

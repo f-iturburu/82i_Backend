@@ -37,6 +37,8 @@ const productSchema = new Schema({
     required: [true, "Debe ingresar una imagen"],
     match: [imageRegex, "La imagen ingresada es invalida"],
   },
+},{
+  timestamps: true
 });
 
 export default model("Product", productSchema);

@@ -4,44 +4,59 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Logo from "../assets/logo.png";
 import { ShowPasswordButton } from "../components/ShowPasswordButton";
-import { emailRegex } from "../helpers/emailRegex";
 import axios from "axios";
 import { setToken } from "../helpers/setToken";
+import { emailRegex } from "../helpers/emailRegex";
+import { passwordRegex } from "../helpers/passwordRegex";
+import { Spinner } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const SignUp = () => {
+  const navigate = useNavigate();
+  const form = useForm();
+  const { register, control, handleSubmit, formState, watch } = form;
+  const { errors } = formState;
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [validated, setValidated] = useState(false);
 
-  const handleSubmit = async (event) => {
-    const form = event.currentTarget;
-    event.preventDefault();
+  const onSubmit = async (formData) => {
+    setLoading(true);
 
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
+    try {
+      const res = await axios.post(`${BASE_URL}/user`, formData);
+      const data = res.data;
+      setToken("auth-token", data.token);
+      setToken("key", data.key);
+      alert("Te has registrado exitosamente")
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+
+      if (error.code == "ERR_NETWORK") {
+        alert("Error de red, compruebe si esta conectado a internet");
+      }
+
+      if (error?.response.status == 400) {
+        let errorMessage = "";
+        error.response.data.errors.map((i) => (errorMessage += `${i.msg} \n`));
+        alert(errorMessage);
+      }
+    } finally {
+      setLoading(false);
     }
-    
-    setValidated(true);
-    const formData = Object.fromEntries(new FormData(event.target));
-    console.log(formData);
-
-     try {
-        const res = await axios.post(`${BASE_URL}/user`, formData)
-        const data = res.data
-        setToken(data)
-     } catch (error) {
-       console.log(error.response.data.errors);
-
-       let errorMessage = ""
-       error.response.data.errors.map(i => errorMessage += `${i.msg} \n`)
-       alert(errorMessage)
-     }
   };
 
   return (
     <>
       <section className="container vh-100 mt-5 w-100 d-flex justify-content-center">
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
+        <Form
+          noValidate
+          style={{ maxWidth: "494px" }}
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div className="text-center d-flex align-items-center my-3 pb-3 border border-light border-0 border-bottom">
             <img src={Logo} className="img-fluid w-25" alt="" />
             <div className="ms-4 text-start">
@@ -49,17 +64,26 @@ export const SignUp = () => {
               <h4>Sign Up</h4>
             </div>
           </div>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Group className="mb-3 " controlId="formBasicEmail">
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
-              name="email"
-              placeholder="Enter email"
-              pattern={emailRegex}
-              required
+              placeholder="Email"
+              className={errors.email?.message ? "is-invalid" : ""}
+              {...register("email", {
+                required: {
+                  value: true,
+                  message: "Ingrese un email",
+                },
+                pattern: {
+                  value: emailRegex,
+                  message: "Ingrese un email valido",
+                },
+              })}
             />
             <Form.Control.Feedback type="invalid">
-              Ingrese un email valido
+              {/* Message */}
+              {errors.email?.message}
             </Form.Control.Feedback>
           </Form.Group>
 
@@ -67,20 +91,63 @@ export const SignUp = () => {
           <InputGroup className="mb-3">
             <Form.Control
               name="password"
+              aria-describedby="passwordHelpBlock"
               type={showPassword ? "text" : "password"}
+              className={errors.password?.message ? "is-invalid" : ""}
               placeholder="Password"
-              required
+              {...register("password", {
+                required: {
+                  value: true,
+                  message: "Ingrese una contraseña",
+                },
+                pattern: {
+                  value: passwordRegex,
+                  message: "Ingrese una contraseña valido",
+                },
+              })}
             />
             <ShowPasswordButton
               state={showPassword}
               setState={setShowPassword}
             />
+
+            <Form.Control.Feedback
+              type="invalid"
+              style={{ textAlign: "justify" }}
+            >
+              {/* Message */}
+              {`${errors.password?.message}, Su contraseña debe estar conformada de un minimo de 8 caracteres y maximo de 30. Debe contener al menos una letra y un número, no se permiten espacios ni caracteres especiales. `}
+            </Form.Control.Feedback>
+          </InputGroup>
+
+          <Form.Label>Confirmar Contraseña</Form.Label>
+          <InputGroup className="mb-3">
+            <Form.Control
+              name="password"
+              onPaste={(e) => e.preventDefault()}
+              type="password"
+              placeholder="Password"
+              className={errors.confirmPassword?.message ? "is-invalid" : ""}
+              {...register("confirmPassword", {
+                required: {
+                  value: true,
+                  message: "Ingrese una contraseña",
+                },
+                validate: (value) => {
+                  if (value == watch("password")) {
+                    return true;
+                  }
+                  return "Las contraseñas no coinciden";
+                },
+              })}
+            />
             <Form.Control.Feedback type="invalid">
-              Ingrese una contraseña
+              {/* Message */}
+              {errors.confirmPassword?.message}
             </Form.Control.Feedback>
           </InputGroup>
           <Button variant="primary" type="submit">
-            Ingresar
+            {loading ? <Spinner size="sm" /> : "Registrarme"}
           </Button>
         </Form>
       </section>

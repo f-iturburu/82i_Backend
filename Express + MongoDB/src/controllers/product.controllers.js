@@ -1,8 +1,16 @@
 import Product from "../models/product.model.js";
+import { verifyUserToken } from "../validators/verifyToken.js";
 
 export const createProduct = async (req, res) => {
   const { name, price, category, discountPercenteage, visible, image } =
     req.body;
+
+    const { userToken } = req
+
+    if (userToken.role !== "Admin") {
+      return  res.status(403).json({message: "Acceso denegado"})
+    }
+
   try {
     const newProduct = await Product.create({
       name: name,
@@ -19,6 +27,12 @@ export const createProduct = async (req, res) => {
 };
 
 export const getAll = async (req, res) => {
+  // const { userToken } = req
+    
+  // if (userToken.role !== "Admin") {
+  //   return  res.status(403).json({message: "Acceso denegado"})
+  // }
+
   try {
     const products = await Product.find();
     res.status(200).json(products);
@@ -39,6 +53,12 @@ export const getById = async (req, res) => {
 
 export const deleteById = async (req, res) => {
   const { id } = req.params;
+  const { userToken } = req
+
+  if (userToken.role !== "Admin") {
+    return  res.status(403).json({message: "Acceso denegado"})
+  }
+
   try {
     await Product.findByIdAndDelete(id);
     res.status(204).json({ message: "Producto borrado exitosamente" });
@@ -50,8 +70,12 @@ export const deleteById = async (req, res) => {
 export const edit = async (req, res) => {
   const { id } = req.params;
   const payload = req.body;
-  console.log("ID: ", id);
-  console.log("Payload: ", payload);
+  const { userToken } = req
+
+  if (userToken.role !== "Admin") {
+    return  res.status(403).json({message: "Acceso denegado"})
+  }
+
   try {
     const productUpdated = await Product.findByIdAndUpdate(id, payload);
 
@@ -68,8 +92,9 @@ export const edit = async (req, res) => {
 
 export const getProductsWithOptions = async (req, res) => {
   const { name, price, category } = req.query;
-  const searchQuery = {};
+  const searchQuery = { visible: true };
   const priceSortQuery = price == "asc" ? "asc" : "desc";
+
 
   if (name) {
     const partialMatchName = new RegExp(name, "i");
@@ -83,8 +108,6 @@ export const getProductsWithOptions = async (req, res) => {
   if (category) {
     searchQuery.category = category;
   }
-
-  console.log(searchQuery);
 
   try {
     const productsFound = await Product.find(searchQuery).sort({
@@ -102,3 +125,4 @@ export const getProductsWithOptions = async (req, res) => {
     return res.status(500).json({ message: error });
   }
 };
+

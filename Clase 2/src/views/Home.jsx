@@ -7,97 +7,147 @@ import { ProductNotFoundMessage } from "../components/ProductNotFoundMessage";
 import Button from "react-bootstrap/Button";
 import Placeholder from "react-bootstrap/Placeholder";
 import Image from "react-bootstrap/Image";
-
+import { useSearchParams } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-const searchByNameHandler = async (setState, setLoading, value) => {
-  setLoading(true);
-  try {
-    const res = await fetch(`${BASE_URL}/product/name/${value}`, {
-      headers: {
-        "content-type": "application/json",
-      },
-      method: "GET",
-    });
-    const data = await res.json();
+// const searchByNameHandler = async (setState, setLoading, value) => {
+//   setLoading(true);
+//   try {
+//     const res = await fetch(`${BASE_URL}/product/name/${value}`, {
+//       headers: {
+//         "content-type": "application/json",
+//       },
+//       method: "GET",
+//     });
+//     const data = await res.json();
 
-    if (res.status == 200) {
-      setState(data);
-    }
+//     if (res.status == 200) {
+//       setState(data);
+//     }
 
-    if (res.status == 404) {
-      setState(null);
-    }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
-  }
-};
+//     if (res.status == 404) {
+//       setState(null);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
-const sortByPriceHandler = async (setState, setLoading, value) => {
-  setLoading(true);
-  try {
-    const res = await fetch(`${BASE_URL}/product/order/${value}`, {
-      headers: {
-        "content-type": "application/json",
-      },
-      method: "GET",
-    });
+// const sortByPriceHandler = async (setState, setLoading, value) => {
+//   setLoading(true);
+//   try {
+//     const res = await fetch(`${BASE_URL}/product/order/${value}`, {
+//       headers: {
+//         "content-type": "application/json",
+//       },
+//       method: "GET",
+//     });
 
-    const data = await res.json();
+//     const data = await res.json();
 
-    if (res.status == 200) {
-      setState(data);
-    }
+//     if (res.status == 200) {
+//       setState(data);
+//     }
 
-    if (res.status == 404) {
-      setState(null);
-    }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
-  }
-};
+//     if (res.status == 404) {
+//       setState(null);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
-const sortByCategoryHandler = async (setState, setLoading, value) => {
-  setLoading(true);
-  try {
-    const res = await fetch(`${BASE_URL}/product/category/${value}`, {
-      headers: {
-        "content-type": "application/json",
-      },
-      method: "GET",
-    });
+// const sortByCategoryHandler = async (setState, setLoading, value) => {
+//   setLoading(true);
+//   try {
+//     const res = await fetch(`${BASE_URL}/product/category/${value}`, {
+//       headers: {
+//         "content-type": "application/json",
+//       },
+//       method: "GET",
+//     });
 
-    const data = await res.json();
+//     const data = await res.json();
 
-    if (res.status == 200) {
-      setState(data);
-    }
+//     if (res.status == 200) {
+//       setState(data);
+//     }
 
-    if (res.status == 404) {
-      setState(null);
-    }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
-  }
-};
+//     if (res.status == 404) {
+//       setState(null);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+// const fetchAllProducts = async (setState, setLoading) => {
+//   setLoading(true);
+//   try {
+//     const res = await fetch(`${BASE_URL}/products`, {
+//       headers: {
+//         "content-type": "application/json",
+//       },
+//       method: "GET",
+//     });
+
+//     const data = await res.json();
+//     if (res.status == 200) {
+//       setState(data);
+//     }
+
+//     if (res.status == 404) {
+//       setState(null);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
 const searchWithOptions = async ({
   setState,
   setLoading,
+  queryParams
+}) => {
+  setLoading(true);
+
+  try {
+    const res = await axios.get(`${BASE_URL}/products/search${queryParams}`);
+    const data = res.data;
+
+    if (res.status == 200) {
+      setState(data);
+    }
+
+    if (res.status == 404 || res.status == 500) {
+      setState(null);
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleQueryParams = ({
   valueSearchInput,
   valueCategoryInput,
   valuePriceInput,
+  setQueryParams,
 }) => {
-
   const queryParams = {
     name: valueSearchInput,
-    price:  valuePriceInput,
+    price: valuePriceInput,
     category: valueCategoryInput,
   };
 
@@ -111,76 +161,27 @@ const searchWithOptions = async ({
     }
   }
 
-  // let queryString = "?";
+  setQueryParams(queryString)
 
-  // if (valueCategoryInput) {
-  //   queryString.length == 1
-  //     ? (queryString += `category=${category}`)
-  //     : (queryString += `&category=${category}`);
-  // }
+  // * let queryString = "?";
 
-  // if (valuePriceInput) {
-  //   queryString.length == 1
-  //     ? (queryString += `price=${price}`)
-  //     : (queryString += `&price=${price}`);
-  // }
+  // * if (valueCategoryInput) {
+  // *  queryString.length == 1
+  // *    ? (queryString += `category=${category}`)
+  // *    : (queryString += `&category=${category}`);
+  // * }
 
-  // if (valueSearchInput) {
-  //   queryString.length == 1
-  //     ? (queryString += `name=${name}`)
-  //     : (queryString += `&name=${name}`);
-  // }
+  // * if (valuePriceInput) {
+  // *  queryString.length == 1
+  // *    ? (queryString += `price=${price}`)
+  // *    : (queryString += `&price=${price}`);
+  // * }
 
-  setLoading(true);
-
-  try {
-    const res = await fetch(`${BASE_URL}/products/search${queryString}`, {
-      headers: {
-        "content-type": "application/json",
-      },
-      method: "GET",
-    });
-
-    const data = await res.json();
-
-    if (res.status == 200) {
-      setState(data);
-    }
-
-    if (res.status == 404 || res.status == 500) {
-      setState(null);
-    }
-
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const fetchAllProducts = async (setState, setLoading) => {
-  setLoading(true);
-  try {
-    const res = await fetch(`${BASE_URL}/products`, {
-      headers: {
-        "content-type": "application/json",
-      },
-      method: "GET",
-    });
-
-    const data = await res.json();
-    if (res.status == 200) {
-      setState(data);
-    }
-
-    if (res.status == 404) {
-      setState(null);
-    }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
-  }
+  // * if (valueSearchInput) {
+  // *  queryString.length == 1
+  // *    ? (queryString += `name=${name}`)
+  // *   : (queryString += `&name=${name}`);
+  // * }
 };
 
 const renderHandler = (data, loading) => {
@@ -206,15 +207,20 @@ const renderHandler = (data, loading) => {
 export const Home = () => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
+  const [queryParams, setQueryParams] = useSearchParams();
+  const location = useLocation();
   const searchInputRef = useRef();
   const priceInputRef = useRef();
   const categoryInputRef = useRef();
   const searchFormRef = useRef();
 
+  // useEffect(() => {
+  //   searchWithOptions(setData, setLoading, searchParams);
+  // }, []);
 
-  useEffect(() => {
-    fetchAllProducts(setData, setLoading);
-  }, []);
+  useEffect(()=>{
+    searchWithOptions({setState: setData, setLoading: setLoading, queryParams: location.search});
+  },[queryParams])
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -238,12 +244,11 @@ export const Home = () => {
                 ref={searchInputRef}
                 onKeyDown={(e) =>
                   e.code == "Enter"
-                    ? searchWithOptions({
-                        setState: setData,
-                        setLoading: setLoading,
+                    ? handleQueryParams({
                         valueSearchInput: searchInputRef.current.value,
                         valueCategoryInput: categoryInputRef.current.value,
                         valuePriceInput: priceInputRef.current.value,
+                        setQueryParams: setQueryParams
                       })
                     : ""
                 }
@@ -257,12 +262,11 @@ export const Home = () => {
               defaultValue={""}
               ref={priceInputRef}
               onChange={(e) =>
-                searchWithOptions({
-                  setState: setData,
-                  setLoading: setLoading,
+                handleQueryParams({
                   valueSearchInput: searchInputRef.current.value,
                   valueCategoryInput: categoryInputRef.current.value,
                   valuePriceInput: priceInputRef.current.value,
+                  setQueryParams: setQueryParams
                 })
               }
             >
@@ -281,12 +285,11 @@ export const Home = () => {
               defaultValue={""}
               ref={categoryInputRef}
               onChange={(e) =>
-                searchWithOptions({
-                  setState: setData,
-                  setLoading: setLoading,
+                handleQueryParams({
                   valueSearchInput: searchInputRef.current.value,
                   valueCategoryInput: categoryInputRef.current.value,
                   valuePriceInput: priceInputRef.current.value,
+                  setQueryParams: setQueryParams
                 })
               }
             >
@@ -307,7 +310,7 @@ export const Home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 searchFormRef.current.reset();
-                fetchAllProducts(setData, setLoading);
+                setQueryParams();
               }}
             >
               Limpiar filtros
@@ -318,8 +321,6 @@ export const Home = () => {
       <section className="container my-5 vh-50">
         <div className="row">{renderHandler(data, loading)}</div>
       </section>
-      
-   
     </>
   );
 };

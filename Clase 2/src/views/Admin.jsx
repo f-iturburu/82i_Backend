@@ -19,7 +19,10 @@ export const Admin = () => {
   const [formAddImage, setFormAddImage] = useState(null);
   const [editFormImage, setEditFormImage] = useState(null);
   const [editProductDiscount, setEditProductDiscount] = useState();
-  const [createProductLoading, setCreateProductLoading] = useState(false);
+  const [createProductLoading, setCreateProductLoading] = useState();
+  const [deleteProductLoading, setDeleteProductLoading] = useState()
+  const [editProductLoading, setEditProductLoading] = useState()
+  const [changeVisibilityLoading, setChangeVisibilityLoading] = useState()
   const [editProduct, setEditProduct] = useState();
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
@@ -30,6 +33,10 @@ export const Admin = () => {
     fetchAllProducts();
   }, []);
 
+  useEffect(()=>{
+    setEditProductDiscount(editProduct?.discountPercenteage ? true : false)
+  },[editProduct])
+
   const fetchAllProducts = async () => {
     setLoading(true);
     try {
@@ -39,7 +46,7 @@ export const Admin = () => {
         const data = res.data;
         setData(data);
       }
-      console.log(res.data);
+
     } catch (error) {
       console.log(error);
     } finally {
@@ -52,6 +59,7 @@ export const Admin = () => {
     setFormDiscount(false);
     setFormAddImage(null);
   };
+
   const handleShow = () => setShow(true);
 
   const handleEditModalClose = () => {
@@ -64,7 +72,16 @@ export const Admin = () => {
     e.preventDefault();
     const form = addFormRef.current;
     const data = Object.fromEntries(new FormData(form));
+    setCreateProductLoading(true)
     console.log(data);
+
+    try {
+      
+    } catch (error) {
+      
+    }finally{
+      setCreateProductLoading(false)
+    }
   };
 
   const handleEditFormSubmit = (e) => {
@@ -72,6 +89,14 @@ export const Admin = () => {
     const form = editFormRef.current;
     const data = Object.fromEntries(new FormData(form));
     console.log(data);
+
+    try {
+      
+    } catch (error) {
+      
+    }finally{
+      
+    }
   };
 
   return (
@@ -122,9 +147,15 @@ export const Admin = () => {
                     category={product.category}
                     discount={product?.discountPercenteage}
                     visible={product.visible}
+                    image={product.image}
+                    id={product._id}
                     setModalState={setShowEditModal}
                     setProductState={setEditProduct}
-                    id={product.id}
+                    setChangeVisibilityLoading={setChangeVisibilityLoading}
+                    changeVisibilityLoading={changeVisibilityLoading}
+                    deleteProductLoading = {deleteProductLoading}
+                    setDeleteProductLoading = {setDeleteProductLoading}
+                    setData = {setData}
                   />
                 );
               })}
@@ -215,10 +246,10 @@ export const Admin = () => {
           </Button>
           <Button
             variant="primary"
-            disabled={createProductLoading ? true : false}
+            disabled={editProductLoading}
             onClick={handleAddFormSubmit}
           >
-            {createProductLoading ? <Spinner size="sm" /> : "Crear"}
+            {editProductLoading ? <Spinner size="sm" /> : "Crear"}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -287,7 +318,7 @@ export const Admin = () => {
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check
                 type="checkbox"
-                defaultChecked={editProduct?.discountPercenteage}
+                defaultChecked={editProduct?.discountPercenteage ? true : false}
                 onChange={() => setEditProductDiscount(!editProductDiscount)}
                 label="Descuento"
               />
@@ -296,7 +327,7 @@ export const Admin = () => {
             {editProductDiscount ? (
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Porcentaje de descuento </Form.Label>
-                <Form.Control name="discountPercenteage" type="number" />
+                <Form.Control name="discountPercenteage" value={editProduct?.discountPercenteage} type="number" />
               </Form.Group>
             ) : (
               ""
@@ -309,7 +340,7 @@ export const Admin = () => {
           </Button>
           <Button
             variant="primary"
-            disabled={createProductLoading ? true : false}
+            disabled={createProductLoading}
             onClick={handleEditFormSubmit}
           >
             {createProductLoading ? <Spinner size="sm" /> : "Guardar"}

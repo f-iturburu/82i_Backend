@@ -1,3 +1,3 @@
-export const setToken = (token) =>{
-    localStorage.setItem("auth-token", JSON.stringify(token))
+export const setToken = (key,token) =>{
+    localStorage.setItem(key, JSON.stringify(token))
 }
